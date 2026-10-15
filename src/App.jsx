@@ -71,7 +71,7 @@ function Avatar({ src, name, size = "normal", ring = false, onClick }) {
   );
 }
 
-function Sidebar({ active, setActive, onCreate, onProfile }) {
+function Sidebar({ active, setActive, onCreate, onProfile , onLogout}) {
   const items = [
     { label: "Home", icon: House },
     { label: "Search", icon: Search },
@@ -96,6 +96,7 @@ function Sidebar({ active, setActive, onCreate, onProfile }) {
         ))}
       </nav>
       <button className="nav-item more-button" onClick={() => setActive(active === "More" ? "Home" : "More")}><Menu size={24}/><span>More</span></button>
+     <button className="nav-item more-button" onClick={onLogout}><LogOut size={24} /> <span>Log out</span></button>   {/* logout   */}
     </aside>
   );
 }
@@ -403,11 +404,26 @@ export default function App() {
   const [toast, setToast] = useState("");
   const stories = initialStories;
   const filteredPosts = useMemo(() => posts.filter(p => `${p.user} ${p.caption} ${p.location}`.toLowerCase().includes(search.toLowerCase())), [posts, search]);
+
+
+  // Add logout handler HERE
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setActive("Home");
+  };
+
+
   if (!currentUser) {
     return (
       <Auth onLogin={(username) => setCurrentUser(username)} />
     );
   } 
+
+//   const handleLogout = () => {
+//   setCurrentUser(null);
+//   setActive("Home");
+// }; 
+
   function notify(message) {
     setToast(message);
     window.setTimeout(() => setToast(""), 2200);
@@ -444,9 +460,8 @@ export default function App() {
     if (label === "Explore") { setActive("Explore"); return; }
     setActive(label);
   }
-
   return <div className="app-shell">
-    <Sidebar active={active} setActive={chooseNav} onCreate={() => setCreateOpen(true)} onProfile={() => setActive("Profile")}/>
+    <Sidebar active={active} setActive={chooseNav} onCreate={() => setCreateOpen(true)} onProfile={() => setActive("Profile")} onLogout={handleLogout}/>
     <TopBar active={active} onSearch={() => setSearchOpen(v => !v)}/>
     <main className={`main-content ${active !== "Home" ? "non-home" : ""}`}>
       {active === "Home" && <div className="home-layout">
